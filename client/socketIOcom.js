@@ -14,6 +14,7 @@ var instanceId;
 var updatePlayerPositions;
 var updatePlayerLeft;
 var updateConnection;
+var onPlayerDeath;
 var log;
 
 socket.on("connect", () => {
@@ -61,6 +62,14 @@ export function setUpdateConnection(c) {
   updateConnection = c;
 }
 
+export function setOnPlayerDeath(f) {
+  onPlayerDeath = f;
+}
+
+export function playerDied(playerId) {
+  socket.emit("playerDied", playerId);
+}
+
 export async function startUp() {
   log("starting up socketIO, socket connected " + connected);
 
@@ -77,6 +86,10 @@ export async function startUp() {
   socket.on('on-join-instance', (_instanceId => {
     log("ON JOIN INSTANCE" + _instanceId + " = " + instanceId);
   }))
+
+  socket.on('playerDied', (playerId) => {
+    onPlayerDeath(playerDied);
+  })
 
   // Join the specific instance
   socket.emit('join-instance', instanceId);

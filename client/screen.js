@@ -1,5 +1,5 @@
 import Color from 'color';
-import { sendPlayerPosition, setUpdatePlayerPositions, setUpdatePlayerLeft, setUpdateConnection } from './socketIOcom';
+import { sendPlayerPosition, setUpdatePlayerPositions, setUpdatePlayerLeft, setUpdateConnection, playerDied, setOnPlayerDeath } from './socketIOcom';
 
 var canvas;
 var context;
@@ -30,6 +30,7 @@ var frame = 0;
 var wrote = false;
 var hasRead = false;
 var connected = false;
+var points = 0;
 
 const updatePlayerPositions = async (player) => {
     hasRead = true;
@@ -38,15 +39,21 @@ const updatePlayerPositions = async (player) => {
 
 const updatePlayerLeft = async (id) => {
     otherPos.delete(id);
-}
+};
 
 const updateConnection = async (isConnected) => {
     connected = isConnected;
-}
+};
+
+const onPlayerDeath = async (userId) => {
+    if (alive)
+        points++;
+};
 
 setUpdatePlayerPositions(updatePlayerPositions);
 setUpdatePlayerLeft(updatePlayerLeft)
 setUpdateConnection(updateConnection);
+setOnPlayerDeath(onPlayerDeath);
 
 export async function init() {
     userId = generateUID();
@@ -145,6 +152,9 @@ async function draw() {
     var collision = checkCollision();
     context.fillText("colliding: " + collision, 10, 380);
     if (collision == true) {
+        if (alive) {
+            playerDied(userId);
+        }
         alive = false;
     }
     context.fillText("wrote: " + wrote, 10, 400);
@@ -156,6 +166,7 @@ async function draw() {
     context.fillText("frame % 60: " + frame, 10, 460);
 
     context.fillText("connected: " + connected, 10, 480);
+    context.fillText("points: " + points, 400, 20);
     
     otherPos.forEach((key, value) => {
         setPixelsInCircle(bitmap, Math.floor(value.x), Math.floor(value.y), otherColor, 2);
