@@ -11,7 +11,7 @@ import { fileURLToPath } from "url";
 
 dotenv.config({ path: "../.env" });
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 const server = createServer(app);
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
