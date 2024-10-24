@@ -1,4 +1,4 @@
-import express from "express";
+import express from "express.js";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
 import { Server } from "socket.io";
@@ -17,7 +17,9 @@ const server = createServer(app);
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = dirname(__filename); // get the name of the directory
 
-const staticPath = resolve(__dirname, ".", "dist");
+const staticPath = resolve(__dirname, "dist");
+
+app.use(express.static(staticPath));
 // const server = createServer((req, res) => {
 //   res.writeHead((200, { 'Content-Type': 'text/plain' }));
 //   res.end('Helo, GFG!');
@@ -115,7 +117,6 @@ io.on('connect', (socket) => {
 
 if (process.env.NODE_ENV === "production") {
   app.get("*", (req, res) => {
-    app.use(express.static(staticPath));
     const index = join(__dirname, "dist", "index.html");
     return res.sendFile(index);
   });
