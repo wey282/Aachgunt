@@ -1,0 +1,24 @@
+{
+  "name": "getting-started-activity",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.0.8"
+  },
+  "dependencies": {
+    "@discord/embedded-app-sdk": "^1.4.3",
+    "color": "^4.2.3",
+    "discord-rpc": "^4.0.1",
+    "electron": "^32.1.2",
+    "express": "^2.5.11",
+    "http": "^0.0.1-security",
+    "socket.io": "^1.7.4",
+    "socket.io-client": "^4.8.0"
+  }
+}
