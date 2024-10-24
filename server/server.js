@@ -18,6 +18,7 @@ const __filename = fileURLToPath(import.meta.url); // get the resolved path to t
 const __dirname = dirname(__filename); // get the name of the directory
 
 const staticPath = resolve(__dirname, "dist");
+console.log(`staticPath: ${staticPath}`);
 
 app.use(express.static(staticPath));
 // const server = createServer((req, res) => {
