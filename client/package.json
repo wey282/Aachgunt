@@ -15,7 +15,6 @@
     "@discord/embedded-app-sdk": "^1.4.3",
     "color": "^4.2.3",
     "discord-rpc": "^4.0.1",
-    "electron": "^32.1.2",
     "express": "^2.5.11",
     "http": "^0.0.1-security",
     "socket.io": "^1.7.4",
