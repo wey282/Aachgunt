@@ -34,6 +34,18 @@ var points = 0;
 
 var powerUps = [];
 
+var tank = false;
+var tankStart = 0;
+
+var chair = false;
+
+var types = ["TANK", "CHAIR"];
+
+var chairs = [];
+
+var WIDTH = 500;
+var HEIGHT = 500;
+
 const updatePlayerPositions = async (player) => {
     hasRead = true;
     setOther(player.id, player.x, player.y); 
@@ -62,13 +74,14 @@ export async function init() {
 
     const app = document.querySelector('#app');
     canvas = document.getElementById("tailCanvas"); 
-    context = canvas.getContext("2d"); 
-    bitmap = context.createImageData(canvas.width, canvas.height);
+    context = canvas.getContext("2d");
+
+    bitmap = context.createImageData(WIDTH, HEIGHT);
     
     const black = Color.rgb(0, 0, 0);
 
-    for (let j = 0; j < canvas.width; j++) {
-        for (let i = 0; i < canvas.height; i++) {
+    for (let j = 0; j < WIDTH; j++) {
+        for (let i = 0; i < HEIGHT; i++) {
             setPixel(bitmap, j, i, black);
         }
     }
@@ -108,9 +121,9 @@ export async function keyDown(key) {
 
         if (checkX <= 0) 
             dir = Math.PI-dir;
-        else if (checkX >= canvas.height)
+        else if (checkX >= HEIGHT)
             dir = Math.PI*3-dir;
-        else if (checkY <= 0 || checkY >= canvas.width)
+        else if (checkY <= 0 || checkY >= WIDTH)
             dir = -dir;
 
         while (checkCollision()) {
@@ -127,10 +140,20 @@ export async function keyUp(key) {
         dirVel = 0;
     else if ((key == 'd' || key == 'D') && dirVel > 0)
         dirVel = 0;
+    else if (key == 'space' || key == 'Space' || key == 'SPACE' || key == ' ') {
+        if (tank) {
+            x += Math.cos(dir) * 10;
+            y += Math.sin(dir) * 10;
+        }
+        if (chair) {
+            chair = false;
+            chairs.push({x: x, y: y, dir: dir});
+        }
+    }
 }
 
 async function draw() { 
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.clearRect(0, 0, WIDTH, HEIGHT);
     setPixelsInCircle(bitmap, Math.floor(x), Math.floor(y), color, 2);
     context.putImageData(bitmap, 0, 0);
     context.fillStyle = "green";
@@ -140,7 +163,7 @@ async function draw() {
     context.fillText("dirVel = " + dirVel, 10, 160);
     context.fillText("alive = " + alive, 10, 180);
     drawCircle(x, y, rad, color.hex());
-    // context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    // context.drawImage(bitmap, 0, 0, WIDTH, HEIGHT);
     if (alive) {
         x += Math.cos(dir)*speed;
         y += Math.sin(dir)*speed;
@@ -171,20 +194,49 @@ async function draw() {
     context.fillText("points: " + points, 400, 20);
     
     powerUps.forEach(powerUp => {
-        console.log(`drawing power up at ${powerUp.x}, ${powerUp.y}, with rad: ${powerUp.r}`)
-        drawCircle(powerUp.x,powerUp.y, powerUp.r, color.hex());
+        switch (powerUp.type) {
+            case "TANK": {
+                drawImage("tankUp.png", 2*powerUp.r, 2*powerUp.r, powerUp.x, powerUp.y, 0);
+                break;
+            }
+            case "CHAIR": {
+                drawImage("chairUp.png", 2*powerUp.r, 2*powerUp.r, powerUp.x, powerUp.y, 0);
+                break;
+            }
+        }
     });
+
+    var deleteChairs = []; 
+    chairs.forEach(chair => {
+        chair.x += speed*3*Math.cos(chair.dir);
+        chair.y += speed*3*Math.sin(chair.dir);
+        if (chair.x < 0 || chair.x > WIDTH || chair.y < 0 || chair.y > HEIGHT) {
+            deleteChairs.push(chair);
+        }
+        drawImage("chair.png", 30, 30, chair.x, chair.y, chair.dir);
+    });
+    chairs = chairs.filter(chair => !deleteChairs.includes(chair));
 
     otherPos.forEach((key, value) => {
         setPixelsInCircle(bitmap, Math.floor(value.x), Math.floor(value.y), otherColor, 2);
     });
     frame += 1;
-
     checkPowerups();
 
+    if (tank) {
+        drawImage("tank.png", 20, 20, x, y, dir);
+
+        if (frame - tankStart > 60*15) {
+            tank = false;
+        } 
+    }
+
+    if (chair) {
+        drawImage("chair.png", 30, 30, x-Math.cos(dir)*20, y-Math.sin(dir)*20, 0);
+    }
+
     if (frame % 120 == 0 && Math.random() < 0.3) {
-        console.log("new power up" + powerUps.length);
-        powerUps.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: 5, type: "TANK"});
+        powerUps.push({x: Math.random()*WIDTH, y: Math.random()*HEIGHT, r: 15, type: types[Math.floor(Math.random()*types.length)]});
     }
 }
 
@@ -225,15 +277,18 @@ function checkCollision() {
     const checkY = y + Math.sin(dir)*rad;
     context.fillText("checkX = " + checkX, 10, 200);
     context.fillText("checkY = " + checkY, 10, 220);
-    context.fillText("canvasWidth = " + canvas.width, 10, 240);
-    context.fillText("canvasHeight = " + canvas.height, 10, 260);
-    context.fillText("X >= width: " + (checkX >= canvas.width), 10, 280);
-    context.fillText("Y >= height: " + (checkY >= canvas.height), 10, 300);
+    context.fillText("canvasWidth = " + WIDTH, 10, 240);
+    context.fillText("canvasHeight = " + HEIGHT, 10, 260);
+    context.fillText("X >= width: " + (checkX >= WIDTH), 10, 280);
+    context.fillText("Y >= height: " + (checkY >= HEIGHT), 10, 300);
     context.fillText("X <= 0: " + (checkX <= 0), 10, 320);
     context.fillText("Y <= 0: " + (checkY <= 0), 10, 340);
     context.fillText("colliding with tail: " + !getPixelEmpty(bitmap, Math.round(checkX), Math.round(checkY)), 10, 360);
-    return checkX <= 0 || checkX >= canvas.width || checkY <= 0 || checkY >= canvas.height
-         || !getPixelEmpty(bitmap, Math.round(checkX), Math.round(checkY));
+    if (tank && !getPixelEmpty(bitmap, Math.round(checkX), Math.round(checkY))) {
+        tankStart -= 50;
+    }
+    return checkX <= 0 || checkX >= WIDTH || checkY <= 0 || checkY >= HEIGHT
+         || (!tank && !getPixelEmpty(bitmap, Math.round(checkX), Math.round(checkY)));
 }
 
 function pickRandomColor() {
@@ -296,10 +351,16 @@ function checkPowerups() {
     var collected = [];
     powerUps.forEach(powerUp => {
         if ((x-powerUp.x)*(x-powerUp.x)+(y-powerUp.y)*(y-powerUp.y) < powerUp.r * powerUp.r) {
-            points++;
+            collected.push(powerUp);
+
             switch(powerUp.type) {
                 case "TANK": {
-                    collected.push(powerUp);
+                    tank = true;
+                    tankStart = frame;
+                    break;
+                }
+                case "CHAIR": {
+                    chair = true;
                     break;
                 }
             }
@@ -307,3 +368,20 @@ function checkPowerups() {
     });
     powerUps = powerUps.filter(powerUp => !collected.includes(powerUp));
 }
+
+function drawImage(src, sizeX, sizeY, x, y, rotation) {
+    let img = new Image(sizeX, sizeY);
+    img.src = src;
+
+    // Save the rotation and translation
+    context.save();
+
+    // Draw the rotated image
+    context.translate(x, y);
+    context.rotate(rotation);
+    context.drawImage(img, -sizeX/2, -sizeY/2, sizeX, sizeY);
+
+    // Restore the rotation and translation
+    context.restore();
+    // context.translate(-200, 0);
+};
