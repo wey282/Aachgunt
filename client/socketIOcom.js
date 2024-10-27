@@ -66,8 +66,8 @@ export function setOnPlayerDeath(f) {
   onPlayerDeath = f;
 }
 
-export function playerDied(playerId) {
-  socket.emit("playerDied", playerId);
+export function playerDied() {
+  socket.emit("playerDied", {});
 }
 
 export async function startUp() {
@@ -87,8 +87,8 @@ export async function startUp() {
     log("ON JOIN INSTANCE" + _instanceId + " = " + instanceId);
   }))
 
-  socket.on('playerDied', (playerId) => {
-    onPlayerDeath(playerDied);
+  socket.on('playerDied', (object) => {
+    onPlayerDeath();
   })
 
   // Join the specific instance

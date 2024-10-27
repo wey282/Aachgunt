@@ -59,7 +59,7 @@ const updateConnection = async (isConnected) => {
     connected = isConnected;
 };
 
-const onPlayerDeath = async (userId) => {
+const onPlayerDeath = async () => {
     if (alive)
         points++;
 };
@@ -178,7 +178,8 @@ async function draw() {
     context.fillText("colliding: " + collision, 10, 380);
     if (collision == true) {
         if (alive) {
-            playerDied(userId);
+            points--;
+            playerDied();
         }
         alive = false;
     }
