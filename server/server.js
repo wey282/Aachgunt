@@ -31,7 +31,7 @@ app.use(express.static(staticPath));
 //   }
 // });
 const io = new Server(server, { 
-  cors: { origin: '*', methods: ["GET", "POST"] },
+  cors: { origin: '*', methods: ["GET", "POST"], credentials: true},
   allowEIO3: true 
 });
 

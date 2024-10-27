@@ -4,6 +4,7 @@ import { io } from 'socket.io-client';
 const socket = io(window.location.host, {
   transports: ['websocket'],
   path: '/socket',
+  withCredentials: true,
   auth: {
       token: import.meta.env.VITE_SOCKET_TOKEN
   },
