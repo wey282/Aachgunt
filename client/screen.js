@@ -170,6 +170,11 @@ async function draw() {
     context.fillText("connected: " + connected, 10, 480);
     context.fillText("points: " + points, 400, 20);
     
+    powerUps.forEach(powerUp => {
+        console.log(`drawing power up at ${powerUp.x}, ${powerUp.y}, with rad: ${powerUp.r}`)
+        drawCircle(powerUp.x,powerUp.y, powerUp.r, color.hex());
+    });
+
     otherPos.forEach((key, value) => {
         setPixelsInCircle(bitmap, Math.floor(value.x), Math.floor(value.y), otherColor, 2);
     });
@@ -177,12 +182,9 @@ async function draw() {
 
     checkPowerups();
 
-    powerUps.forEach(powerUp => {
-        context.drawCircle(Math.round(powerUp.x),Math.round(powerUp.y), powerUp.r, "gray");
-    });
-
     if (frame % 120 == 0 && Math.random() < 0.3) {
-        powerUps.push({x: Math.random()*canvas.width, y: Math.random*canvas.height, r: 10, type: "TANK"});
+        console.log("new power up" + powerUps.length);
+        powerUps.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: 5, type: "TANK"});
     }
 }
 
@@ -294,6 +296,7 @@ function checkPowerups() {
     var collected = [];
     powerUps.forEach(powerUp => {
         if ((x-powerUp.x)*(x-powerUp.x)+(y-powerUp.y)*(y-powerUp.y) < powerUp.r * powerUp.r) {
+            points++;
             switch(powerUp.type) {
                 case "TANK": {
                     collected.push(powerUp);
@@ -302,5 +305,5 @@ function checkPowerups() {
             }
         }
     });
-    powerUps.filter(powerUp => !collected.includes(powerUp));
+    powerUps = powerUps.filter(powerUp => !collected.includes(powerUp));
 }
