@@ -30,7 +30,10 @@ app.use(express.static(staticPath));
 //     origin: ['http://localhost:5173']
 //   }
 // });
-const io = new Server(server, { cors: { origin: '*', methods: ["GET", "POST"] } });
+const io = new Server(server, { 
+  cors: { origin: '*', methods: ["GET", "POST"] },
+  allowEIO3: true 
+});
 
 // Allow express to parse JSON bodies
 app.use(express.json());

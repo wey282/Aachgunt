@@ -349,6 +349,9 @@ async function setOther(otherUserId, x, y) {
 }
 
 function checkPowerups() {
+    if (!alive) {
+        return;
+    }
     var collected = [];
     powerUps.forEach(powerUp => {
         if ((x-powerUp.x)*(x-powerUp.x)+(y-powerUp.y)*(y-powerUp.y) < powerUp.r * powerUp.r) {
