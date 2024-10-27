@@ -1,4 +1,4 @@
-import express from "express.js";
+import express from "express";
 import dotenv from "dotenv";
 import fetch from "node-fetch";
 import { Server } from "socket.io";

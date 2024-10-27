@@ -32,6 +32,8 @@ var hasRead = false;
 var connected = false;
 var points = 0;
 
+var powerUps = [];
+
 const updatePlayerPositions = async (player) => {
     hasRead = true;
     setOther(player.id, player.x, player.y); 
@@ -172,6 +174,16 @@ async function draw() {
         setPixelsInCircle(bitmap, Math.floor(value.x), Math.floor(value.y), otherColor, 2);
     });
     frame += 1;
+
+    checkPowerups();
+
+    powerUps.forEach(powerUp => {
+        context.drawCircle(Math.round(powerUp.x),Math.round(powerUp.y), powerUp.r, "gray");
+    });
+
+    if (frame % 120 == 0 && Math.random() < 0.3) {
+        powerUps.push({x: Math.random()*canvas.width, y: Math.random*canvas.height, r: 10, type: "TANK"});
+    }
 }
 
 async function drawCircle(x, y, r, color) {
@@ -278,4 +290,17 @@ async function setOther(otherUserId, x, y) {
     }
 }
 
-
+function checkPowerups() {
+    var collected = [];
+    powerUps.forEach(powerUp => {
+        if ((x-powerUp.x)*(x-powerUp.x)+(y-powerUp.y)*(y-powerUp.y) < powerUp.r * powerUp.r) {
+            switch(powerUp.type) {
+                case "TANK": {
+                    collected.push(powerUp);
+                    break;
+                }
+            }
+        }
+    });
+    powerUps.filter(powerUp => !collected.includes(powerUp));
+}
