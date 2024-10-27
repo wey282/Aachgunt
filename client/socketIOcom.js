@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client';
 
 // Connect to the Socket.IO server (update with the actual server URL)
-const socket = io(window.location.host, {
+const socket = io("0.0.0.0:3001", {
   transports: ['websocket'],
   path: '/socket',
   withCredentials: true,

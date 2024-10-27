@@ -68,6 +68,7 @@ io.on('connection', (socket) => {
   // console.log(`Player connected: ${socket.id}`);
   console.log(`Player connected`);
 
+  io.emit('socket-connected', socket);
 
   // Listen for player movement
   socket.on('player-update', (data) => {
